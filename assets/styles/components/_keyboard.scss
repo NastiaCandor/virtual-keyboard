@@ -1,0 +1,21 @@
+.keyboard {
+  // display: block;
+  border: 1px solid $color-keyboard-text;
+  box-shadow: 0 0 10px $color-keyboard-backlight;
+  padding: 5px;
+}
+
+.keyboard__key {
+  color: $color-keyboard-text;
+  text-shadow: $color-keyboard-backlight 1px 0 5px;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border: 1px solid $color-keyboard-text;
+  box-shadow: 0 0 10px $color-keyboard-backlight;
+  margin-left: 6px;
+  float: left;
+  cursor: pointer;
+  user-select: none;
+}
