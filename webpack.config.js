@@ -2,13 +2,14 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const devServer = (isDev) => !isDev ? {} : {
   devServer: {
     open: true,
     hot: true,
     port: 5500,
-  }
+  },
 };
 
 module.exports = ({develop}) => ({
@@ -32,17 +33,18 @@ module.exports = ({develop}) => ({
       {
         test: /\.s[ac]ss$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
-      }
-    ]    
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Virtual Keyboard'
+      title: 'Virtual Keyboard',
     }),
     new FaviconsWebpackPlugin('assets/icons/keyboard-key.png'),
     new MiniCssExtractPlugin({
       filename: '[name].css',
-    })
+    }),
+    new ESLintPlugin({ extensions: ['js']}),
   ],
-  ...devServer(develop)
+  ...devServer(develop),
 });
