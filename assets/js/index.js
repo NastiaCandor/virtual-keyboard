@@ -1,3 +1,5 @@
-import "../styles/style.scss";
+import '../styles/style.scss';
 
-console.log("hello");
+import virtualKeyboard from './virtual-keyboard';
+
+virtualKeyboard();
