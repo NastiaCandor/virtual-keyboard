@@ -7,12 +7,15 @@ export default function addKey() {
       keysContainer: null,
       keys: [],
     },
+
     eventHandlers: {
       oninput: null,
       onclose: null,
     },
+
     properties: {
       value: '',
+      caret: 0,
       capsLock: false,
       shift: false,
       alt: false,
@@ -28,9 +31,11 @@ export default function addKey() {
         this.properties.value = element.target.value;
       });
     },
+
     fillKeyboard(layout, ...classes) {
       const fragment = document.createDocumentFragment();
       const keyboardContainer = document.createElement('div');
+      const textarea = document.querySelector('.main__textarea');
       keyboardContainer.classList.add(...classes);
 
       layout.forEach((key) => {
@@ -43,15 +48,21 @@ export default function addKey() {
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_tab');
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
-              this.pressTab();
+              textarea.focus();
+              this.properties.value += '\t';
+              this.print();
             });
             break;
+
           case 'Backspace':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_backspace');
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
-              const newValue = this.properties.value.substring(0, this.properties.value.length - 1);
-              this.properties.value = newValue;
+              const currentPos = this.properties.caret;
+              const curValue = this.properties.value;
+              const newStr = curValue.slice(0, currentPos - 1) + curValue.slice(currentPos);
+              this.properties.caret -= 1;
+              this.properties.value = newStr;
               this.print();
             });
             break;
@@ -61,15 +72,21 @@ export default function addKey() {
             keyElement.textContent += key;
 
             keyElement.addEventListener('click', () => {
+              textarea.focus();
               this.toogleCaplsLock();
               keyElement.classList.toggle('keyboard__key_active', this.properties.capsLock);
             });
             break;
+
           case 'Del':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_del');
             keyElement.textContent += key;
 
             keyElement.addEventListener('click', () => {
+              textarea.focus();
+              const newValue = this.properties.value.substring(0, this.properties.value.length - 1);
+              this.properties.value = newValue;
+              this.print();
             });
             break;
 
@@ -77,6 +94,7 @@ export default function addKey() {
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_enter');
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
+              textarea.focus();
               this.properties.value += '\n';
               this.print();
             });
@@ -85,6 +103,7 @@ export default function addKey() {
           case 'Space':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_space');
             keyElement.addEventListener('click', () => {
+              textarea.focus();
               this.properties.value += ' ';
               this.print();
             });
@@ -98,12 +117,10 @@ export default function addKey() {
             keyElement.addEventListener('mousedown', () => {
               this.toogleCaplsLock();
               this.toogleShift();
-              // keyElement.classList.toggle('keyboard__key_active', this.properties.shift);
             });
             keyElement.addEventListener('mouseup', () => {
               this.toogleCaplsLock();
               this.toogleShift();
-              // keyElement.classList.toggle('keyboard__key_active');
             });
 
             break;
@@ -145,6 +162,7 @@ export default function addKey() {
 
             keyElement.addEventListener('click', () => {
               const isCaps = this.properties.capsLock;
+              // const curPos = this.properties.caret;
               this.properties.value += isCaps ? key.toUpperCase() : key.toLowerCase();
               this.print();
             });
@@ -171,7 +189,6 @@ export default function addKey() {
         } else {
           const regLangKeyboard = this.fillKeyboard(Alphabets[key].shift, 'keyboard_hidden', `keyboard__${key}`, `keyboard__${key}-reg`);
           const shiftLangKeyboard = this.fillKeyboard(Alphabets[key].shift, 'keyboard_hidden', `keyboard__${key}`, `keyboard__${key}-shift`);
-          // document.querySelector('.keyboard__key_shift')
           fragment.appendChild(regLangKeyboard);
           fragment.appendChild(shiftLangKeyboard);
         }
@@ -180,15 +197,19 @@ export default function addKey() {
       return fragment;
     },
 
-    triggerEvent(handlerName) {
-      if (typeof this.eventHandlers[handlerName] === 'function') {
-        this.eventHandlers[handlerName](this.properties.value);
-      }
-    },
+    // triggerEvent(handlerName) {
+    //   if (typeof this.eventHandlers[handlerName] === 'function') {
+    //     this.eventHandlers[handlerName](this.properties.value);
+    //   }
+    // },
 
     print() {
       document.querySelector('.main__textarea').value = this.properties.value;
     },
+
+    // getCurrentPosition(element) {
+    //   const
+    // },
 
     toogleCaplsLock() {
       this.properties.capsLock = !this.properties.capsLock;
@@ -237,9 +258,28 @@ export default function addKey() {
     pressTab() {
 
     },
+
+    checkcaret() {
+      const newCaretPos = document.querySelector('.main__textarea').selectionStart;
+      // console.log(newCaretPos);
+      // console.log(this.properties.caret);
+      if (newCaretPos !== this.properties.caret) {
+        this.properties.caret = newCaretPos;
+        // console.log(this.properties.caret);
+      }
+    },
   };
 
   window.addEventListener('DOMContentLoaded', () => {
     Keyboard.init();
+    const textarea = document.querySelector('.main__textarea');
+    textarea.addEventListener('select', Keyboard.checkcaret.bind(Keyboard));
+    textarea.addEventListener('selectstart', Keyboard.checkcaret.bind(Keyboard));
+    textarea.addEventListener('input', Keyboard.checkcaret.bind(Keyboard));
+    textarea.addEventListener('cut', Keyboard.checkcaret.bind(Keyboard));
+    textarea.addEventListener('paste', Keyboard.checkcaret.bind(Keyboard));
+    textarea.addEventListener('click', Keyboard.checkcaret.bind(Keyboard));
+    textarea.addEventListener('mousedown', Keyboard.checkcaret.bind(Keyboard));
+    textarea.addEventListener('keypress', Keyboard.checkcaret.bind(Keyboard));
   });
 }
