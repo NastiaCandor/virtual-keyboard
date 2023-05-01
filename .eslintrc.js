@@ -1,13 +1,9 @@
 module.exports = {
   env: {
-    "browser": true,
-    "node": true,
+    browser: true,
+    node: true,
   },
   extends: [
     'eslint-config-airbnb-base',
-  ]
-  // "env": {
-  //   "browser": true,
-  //   "node": true,
-  // },
+  ],
 };

@@ -51,9 +51,7 @@ export default function addKey() {
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              this.properties.value = this.createNewValue(this.properties.caret, '\t');
-              this.properties.caret += 1;
-              this.print();
+              this.printTab();
             });
             break;
 
@@ -265,19 +263,17 @@ export default function addKey() {
       }
     },
 
-    changeLanguage() {
-
-    },
-
-    pressTab() {
-
-    },
-
     checkcaret() {
       const newCaretPos = document.querySelector('.main__textarea').selectionStart;
       if (newCaretPos !== this.properties.caret) {
         this.properties.caret = newCaretPos;
       }
+    },
+
+    printTab() {
+      this.properties.value = this.createNewValue(this.properties.caret, '    ');
+      this.properties.caret += 4;
+      this.print();
     },
 
     printArrow(simb) {
@@ -308,7 +304,7 @@ export default function addKey() {
     textarea.addEventListener('mousedown', Keyboard.checkcaret.bind(Keyboard));
     textarea.addEventListener('keypress', Keyboard.checkcaret.bind(Keyboard));
     textarea.addEventListener('keydown', (el) => {
-      const isPrint = ['Backspace', 'Enter', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight'].indexOf(el.coded) !== -1;
+      const isPrint = ['ControlLeft', 'ControlRight', 'AltLeft', 'AltRight'].indexOf(el.coded) !== -1;
       if (!isPrint) {
         el.preventDefault();
       }
@@ -316,7 +312,7 @@ export default function addKey() {
 
     document.addEventListener('keydown', (event) => {
       const keyCode = String(event.code);
-      const isPrint = ['Backspace', 'Enter', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight'].indexOf(keyCode) !== -1;
+      const isPrint = ['Backspace', 'Enter', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'Tab'].indexOf(keyCode) !== -1;
       switch (keyCode) {
         case 'CapsLock':
           Keyboard.toogleCaplsLock();
@@ -348,6 +344,10 @@ export default function addKey() {
           Keyboard.printArrow('⇨');
           break;
 
+        case 'Tab':
+          Keyboard.printTab();
+          break;
+
         default:
           if (!isPrint) {
             const currKeyBoard = document.querySelector(`.keyboard__${localStorage.getItem('lang')}`);
@@ -371,7 +371,6 @@ export default function addKey() {
           break;
 
         default:
-          // console.log('other');
           break;
       }
     });
