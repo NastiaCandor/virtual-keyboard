@@ -49,7 +49,8 @@ export default function addKey() {
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              this.properties.value += '\t';
+              this.properties.value = this.createNewValue(this.properties.caret, '\t');
+              this.properties.caret += 1;
               this.print();
             });
             break;
@@ -58,6 +59,7 @@ export default function addKey() {
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_backspace');
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
+              textarea.focus();
               const currentPos = this.properties.caret;
               const curValue = this.properties.value;
               const newStr = curValue.slice(0, currentPos - 1) + curValue.slice(currentPos);
@@ -84,8 +86,11 @@ export default function addKey() {
 
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              const newValue = this.properties.value.substring(0, this.properties.value.length - 1);
-              this.properties.value = newValue;
+              const currentPos = this.properties.caret;
+              const curValue = this.properties.value;
+              const newStr = curValue.slice(0, currentPos) + curValue.slice(currentPos + 1);
+              this.properties.value = newStr;
+
               this.print();
             });
             break;
@@ -95,7 +100,8 @@ export default function addKey() {
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              this.properties.value += '\n';
+              this.properties.value = this.createNewValue(this.properties.caret, '\n');
+              this.properties.caret += 1;
               this.print();
             });
             break;
@@ -104,7 +110,8 @@ export default function addKey() {
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_space');
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              this.properties.value += ' ';
+              this.properties.value = this.createNewValue(this.properties.caret, ' ');
+              this.properties.caret += 1;
               this.print();
             });
             break;
@@ -124,6 +131,7 @@ export default function addKey() {
             });
 
             break;
+
           case 'Alt':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_alt');
 
@@ -133,6 +141,7 @@ export default function addKey() {
 
             });
             break;
+
           case 'Win':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_win');
 
@@ -142,6 +151,7 @@ export default function addKey() {
 
             });
             break;
+
           case 'Ctrl':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_ctrl');
 
@@ -161,9 +171,11 @@ export default function addKey() {
             keyElement.classList.add('keyboard__key_letter');
 
             keyElement.addEventListener('click', () => {
+              textarea.focus();
               const isCaps = this.properties.capsLock;
-              // const curPos = this.properties.caret;
-              this.properties.value += isCaps ? key.toUpperCase() : key.toLowerCase();
+              const newSimb = isCaps ? key.toUpperCase() : key.toLowerCase();
+              this.properties.value = this.createNewValue(this.properties.caret, newSimb);
+              this.properties.caret += 1;
               this.print();
             });
             break;
@@ -197,19 +209,17 @@ export default function addKey() {
       return fragment;
     },
 
-    // triggerEvent(handlerName) {
-    //   if (typeof this.eventHandlers[handlerName] === 'function') {
-    //     this.eventHandlers[handlerName](this.properties.value);
-    //   }
-    // },
+    createNewValue(pos, simbol) {
+      const oldStr = this.properties.value;
+      let newStr = oldStr.substring(0, pos) + simbol;
+      newStr += oldStr.substring(pos, oldStr.length);
+      return newStr;
+    },
 
     print() {
       document.querySelector('.main__textarea').value = this.properties.value;
+      document.querySelector('.main__textarea').setSelectionRange(this.properties.caret, this.properties.caret);
     },
-
-    // getCurrentPosition(element) {
-    //   const
-    // },
 
     toogleCaplsLock() {
       this.properties.capsLock = !this.properties.capsLock;
@@ -223,6 +233,7 @@ export default function addKey() {
 
     toogleShift() {
       const currentLang = localStorage.getItem('lang');
+      document.querySelector('.main__textarea').focus();
 
       this.properties.shift = !this.properties.shift;
 
@@ -261,11 +272,8 @@ export default function addKey() {
 
     checkcaret() {
       const newCaretPos = document.querySelector('.main__textarea').selectionStart;
-      // console.log(newCaretPos);
-      // console.log(this.properties.caret);
       if (newCaretPos !== this.properties.caret) {
         this.properties.caret = newCaretPos;
-        // console.log(this.properties.caret);
       }
     },
   };
@@ -273,6 +281,7 @@ export default function addKey() {
   window.addEventListener('DOMContentLoaded', () => {
     Keyboard.init();
     const textarea = document.querySelector('.main__textarea');
+    textarea.focus();
     textarea.addEventListener('select', Keyboard.checkcaret.bind(Keyboard));
     textarea.addEventListener('selectstart', Keyboard.checkcaret.bind(Keyboard));
     textarea.addEventListener('input', Keyboard.checkcaret.bind(Keyboard));
