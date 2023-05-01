@@ -9,19 +9,11 @@ export default function addKey() {
       keys: [],
     },
 
-    eventHandlers: {
-      oninput: null,
-      onclose: null,
-    },
-
     properties: {
       value: '',
       caret: 0,
       capsLock: false,
       shift: false,
-      alt: false,
-      shiftLeft: false,
-      altLeft: false,
     },
 
     init() {
@@ -60,14 +52,7 @@ export default function addKey() {
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              const currentPos = this.properties.caret;
-              const curValue = this.properties.value;
-              if (currentPos !== 0) {
-                const newStr = curValue.slice(0, currentPos - 1) + curValue.slice(currentPos);
-                this.properties.caret -= 1;
-                this.properties.value = newStr;
-                this.print();
-              }
+              this.backspaceSimb();
             });
             break;
 
@@ -84,14 +69,9 @@ export default function addKey() {
           case 'Del':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_del');
             keyElement.textContent += key;
-
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              const currentPos = this.properties.caret;
-              const curValue = this.properties.value;
-              const newStr = curValue.slice(0, currentPos) + curValue.slice(currentPos + 1);
-              this.properties.value = newStr;
-
+              this.deleteSimb();
               this.print();
             });
             break;
@@ -101,9 +81,7 @@ export default function addKey() {
             keyElement.textContent += key;
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              this.properties.value = this.createNewValue(this.properties.caret, '\n');
-              this.properties.caret += 1;
-              this.print();
+              this.enterSimb();
             });
             break;
 
@@ -111,9 +89,7 @@ export default function addKey() {
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_space');
             keyElement.addEventListener('click', () => {
               textarea.focus();
-              this.properties.value = this.createNewValue(this.properties.caret, ' ');
-              this.properties.caret += 1;
-              this.print();
+              this.spaceSimb();
             });
             break;
 
@@ -135,46 +111,28 @@ export default function addKey() {
 
           case 'Alt':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_alt');
-
             keyElement.textContent += key;
-
-            keyElement.addEventListener('click', () => {
-
-            });
             break;
 
           case 'Win':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_win');
-
             keyElement.textContent += key;
-
-            keyElement.addEventListener('click', () => {
-
-            });
             break;
 
           case 'Ctrl':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_ctrl');
-
             keyElement.textContent += key;
-
-            keyElement.addEventListener('click', () => {
-
-            });
             break;
 
           default:
-            if (key.length === 1 && key.match(/[a-z]/i)) {
-              keyElement.innerHTML = key.toLowerCase();
-            } else {
-              keyElement.innerHTML = key;
-            }
+            keyElement.innerHTML = key;
             keyElement.classList.add('keyboard__key_letter');
 
             keyElement.addEventListener('click', () => {
               textarea.focus();
               const isCaps = this.properties.capsLock;
-              const newSimb = isCaps ? key.toUpperCase() : key.toLowerCase();
+              const simb = keyElement.innerHTML;
+              const newSimb = isCaps ? simb.toUpperCase() : simb.toLowerCase();
               this.properties.value = this.createNewValue(this.properties.caret, newSimb);
               this.properties.caret += 1;
               this.print();
@@ -225,9 +183,10 @@ export default function addKey() {
       document.querySelector('.main__textarea').setSelectionRange(this.properties.caret, this.properties.caret);
     },
 
-    toogleCaplsLock(isShift) {
+    toogleCaplsLock() {
       this.properties.capsLock = !this.properties.capsLock;
       const capsKeys = document.querySelectorAll('.CapsLock');
+      const isShift = document.querySelector('.keyboard__key_shift');
       capsKeys.forEach((el) => {
         if (!isShift) {
           if (this.properties.capsLock) {
@@ -270,6 +229,38 @@ export default function addKey() {
       }
     },
 
+    backspaceSimb() {
+      const currentPos = this.properties.caret;
+      const curValue = this.properties.value;
+      if (currentPos !== 0) {
+        const newStr = curValue.slice(0, currentPos - 1) + curValue.slice(currentPos);
+        this.properties.caret -= 1;
+        this.properties.value = newStr;
+        this.print();
+      }
+    },
+
+    deleteSimb() {
+      const currentPos = this.properties.caret;
+      const curValue = this.properties.value;
+      const newStr = curValue.slice(0, currentPos) + curValue.slice(currentPos + 1);
+      this.properties.value = newStr;
+
+      this.print();
+    },
+
+    enterSimb() {
+      this.properties.value = this.createNewValue(this.properties.caret, '\n');
+      this.properties.caret += 1;
+      this.print();
+    },
+
+    spaceSimb() {
+      this.properties.value = this.createNewValue(this.properties.caret, ' ');
+      this.properties.caret += 1;
+      this.print();
+    },
+
     printTab() {
       this.properties.value = this.createNewValue(this.properties.caret, '    ');
       this.properties.caret += 4;
@@ -283,8 +274,11 @@ export default function addKey() {
     },
 
     printSimb(simb) {
-      const isCaps = this.properties.capsLock;
-      const newSimb = isCaps ? simb.toUpperCase() : simb.toLowerCase();
+      const isCaps = document.querySelector('.CapsLock').classList.contains('keyboard__key_active');
+      const isShift = this.properties.shift;
+      const isUpper = ((isCaps && !isShift) || (!isCaps && isShift));
+      // console.log(isUpper);
+      const newSimb = isUpper ? simb.toUpperCase() : simb.toLowerCase();
       this.properties.value = this.createNewValue(this.properties.caret, newSimb);
       this.properties.caret += 1;
       this.print();
@@ -304,6 +298,7 @@ export default function addKey() {
     textarea.addEventListener('mousedown', Keyboard.checkcaret.bind(Keyboard));
     textarea.addEventListener('keypress', Keyboard.checkcaret.bind(Keyboard));
     textarea.addEventListener('keydown', (el) => {
+      Keyboard.checkcaret.bind(Keyboard);
       const isPrint = ['ControlLeft', 'ControlRight', 'AltLeft', 'AltRight'].indexOf(el.coded) !== -1;
       if (!isPrint) {
         el.preventDefault();
@@ -312,7 +307,7 @@ export default function addKey() {
 
     document.addEventListener('keydown', (event) => {
       const keyCode = String(event.code);
-      const isPrint = ['Backspace', 'Enter', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'Tab'].indexOf(keyCode) !== -1;
+      const isPrint = ['Backspace', 'Enter', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'Tab', 'Delete'].indexOf(keyCode) !== -1;
       switch (keyCode) {
         case 'CapsLock':
           Keyboard.toogleCaplsLock();
@@ -320,12 +315,12 @@ export default function addKey() {
 
         case 'ShiftLeft':
           Keyboard.toogleShift();
-          Keyboard.toogleCaplsLock(true);
+          Keyboard.toogleCaplsLock();
           break;
 
         case 'ShiftRight':
           Keyboard.toogleShift();
-          Keyboard.toogleCaplsLock(true);
+          Keyboard.toogleCaplsLock();
           break;
 
         case 'ArrowUp':
@@ -348,11 +343,37 @@ export default function addKey() {
           Keyboard.printTab();
           break;
 
+        case 'Backspace':
+          Keyboard.backspaceSimb();
+          break;
+
+        case 'Delete':
+          Keyboard.deleteSimb();
+          break;
+
+        case 'Enter':
+          Keyboard.enterSimb();
+          break;
+
+        case 'Space':
+          Keyboard.spaceSimb();
+          break;
+
         default:
           if (!isPrint) {
-            const currKeyBoard = document.querySelector(`.keyboard__${localStorage.getItem('lang')}`);
+            const isShift = document.querySelector('.keyboard__key_shift ').classList.contains('keyboard__key_active');
+            const keyType = !isShift ? '-reg' : '-shift';
+            const currKeyBoard = document.querySelector(`.keyboard__${localStorage.getItem('lang')}${keyType}`);
             const currKey = currKeyBoard.querySelector(`.${keyCode}`);
-            Keyboard.printSimb(currKey.innerHTML);
+            if (currKey.innerHTML === '&lt;') {
+              Keyboard.printSimb('<');
+            } else if (currKey.innerHTML === '&gt;') {
+              Keyboard.printSimb('>');
+            } else if (currKey.innerHTML === '&amp;') {
+              Keyboard.printSimb('&');
+            } else {
+              Keyboard.printSimb(currKey.innerHTML);
+            }
           }
           break;
       }

@@ -27,6 +27,7 @@ export default function trackKeys() {
         el.classList.add('keyboard__key_active');
       }
     });
+    // change language layout
     const isShiftLeftOn = document.querySelector('.ShiftLeft').classList.contains('keyboard__key_active');
     const isControlLeftOn = document.querySelector('.ControlLeft').classList.contains('keyboard__key_active');
     if (isShiftLeftOn && isControlLeftOn) {
