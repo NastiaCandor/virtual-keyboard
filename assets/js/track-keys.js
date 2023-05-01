@@ -2,6 +2,7 @@ function isCaps(el) {
   return (el.classList.contains('keyboard__key_active'));
 }
 
+// view actual keyboard
 function viewCurrentLangKeyboard(prevLang, currLang) {
   document.querySelector(`.keyboard__${prevLang}-reg`).classList.remove('keyboard_visible');
   document.querySelector(`.keyboard__${prevLang}-shift`).classList.remove('keyboard_visible');

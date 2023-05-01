@@ -25,6 +25,7 @@ export default function addKey() {
       });
     },
 
+    // create keyboard layout for each language
     fillKeyboard(layout, ...classes) {
       const fragment = document.createDocumentFragment();
       const keyboardContainer = document.createElement('div');
@@ -37,6 +38,7 @@ export default function addKey() {
         keyElement.setAttribute('type', 'button');
         keyElement.classList.add('down', 'keyboard__key');
 
+        // specify behaviour for each key
         switch (key) {
           case 'Tab':
             keyElement.classList.add('keyboard__key_special', 'keyboard__key_tab');
@@ -151,6 +153,7 @@ export default function addKey() {
       return keyboardContainer;
     },
 
+    // create keyboard according Alphabets file
     createKeys() {
       const fragment = document.createDocumentFragment();
 
@@ -171,6 +174,7 @@ export default function addKey() {
       return fragment;
     },
 
+    // create new string with new simbol
     createNewValue(pos, simbol) {
       const oldStr = this.properties.value;
       let newStr = oldStr.substring(0, pos) + simbol;
@@ -178,11 +182,13 @@ export default function addKey() {
       return newStr;
     },
 
+    // print new string to textarea
     print() {
       document.querySelector('.main__textarea').value = this.properties.value;
       document.querySelector('.main__textarea').setSelectionRange(this.properties.caret, this.properties.caret);
     },
 
+    // CapsLock behaviour
     toogleCaplsLock() {
       this.properties.capsLock = !this.properties.capsLock;
       const capsKeys = document.querySelectorAll('.CapsLock');
@@ -203,6 +209,7 @@ export default function addKey() {
       });
     },
 
+    // Shift behaviour
     toogleShift() {
       const currentLang = localStorage.getItem('lang');
       document.querySelector('.main__textarea').focus();
@@ -222,6 +229,7 @@ export default function addKey() {
       }
     },
 
+    // check on what position is caret
     checkcaret() {
       const newCaretPos = document.querySelector('.main__textarea').selectionStart;
       if (newCaretPos !== this.properties.caret) {
@@ -308,6 +316,7 @@ export default function addKey() {
     document.addEventListener('keydown', (event) => {
       const keyCode = String(event.code);
       const isPrint = ['Backspace', 'Enter', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'Tab', 'Delete'].indexOf(keyCode) !== -1;
+      // set real keyboard behaviour
       switch (keyCode) {
         case 'CapsLock':
           Keyboard.toogleCaplsLock();
@@ -359,6 +368,7 @@ export default function addKey() {
           Keyboard.spaceSimb();
           break;
 
+        // set behaviour for normal letters
         default:
           if (!isPrint) {
             const isShift = document.querySelector('.keyboard__key_shift ').classList.contains('keyboard__key_active');
