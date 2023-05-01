@@ -1,8 +1,14 @@
 .keyboard {
-  // display: block;
   border: 1px solid $color-keyboard-text;
   box-shadow: 0 0 10px $color-keyboard-backlight;
-  padding: 5px;
+  padding: 10px 0px 10px 7px;
+  width: 100%;
+
+  display: flow-root;
+
+  &_hidden {
+    display: none;
+  }
 }
 
 .keyboard__key {
@@ -14,8 +20,59 @@
   text-align: center;
   border: 1px solid $color-keyboard-text;
   box-shadow: 0 0 10px $color-keyboard-backlight;
-  margin-left: 6px;
+  background-color: $color-background;
+  margin-left: 5px;
+  margin-bottom: 5px;
   float: left;
   cursor: pointer;
   user-select: none;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: $color-keyboard-hover;
+  }
+
+  &:active {
+    background-color: $color-keyboard-special;
+  }
+
+  &_special {
+    background-color: $color-keyboard-special;
+  }
+
+  &.ArrowUp, &.ArrowLeft, &.ArrowRight, &.ArrowDown {
+    background-color: $color-keyboard-special;
+  }
+
+  &_active {
+    background-color: $color-keyboard-active !important;
+  }
+
+  &_backspace {
+    width: 85px;
+  }
+
+  &_tab {
+    width: 40px;
+  }
+
+  &_caps {
+    width: 70px;
+  }
+
+  &_enter {
+    width: 100px;
+  }
+
+  &_shift {
+    width: 85px;
+  }
+
+  &_ctrl, &_win, &_alt {
+    width: 40px;
+  }
+
+  &_space {
+    width: 310px;
+  }
 }
