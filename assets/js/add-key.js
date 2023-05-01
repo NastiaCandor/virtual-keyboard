@@ -315,7 +315,7 @@ export default function addKey() {
 
     document.addEventListener('keydown', (event) => {
       const keyCode = String(event.code);
-      const isPrint = ['Backspace', 'Enter', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'Tab', 'Delete'].indexOf(keyCode) !== -1;
+      const isPrint = ['Backspace', 'Enter', 'ControlLeft', 'ControlRight', 'AltLeft', 'AltRight', 'Tab', 'Delete', 'MetaLeft'].indexOf(keyCode) !== -1;
       // set real keyboard behaviour
       switch (keyCode) {
         case 'CapsLock':
